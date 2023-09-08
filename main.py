@@ -24,7 +24,7 @@ test_case = ["org $borg", "con n1 0x100", "def .byte 0xff"]
 TClen = len(test_case)
 _disable = False
 
-var.settings.mode(26, False, False, False)
+var.settings.mode(20, False, False, False)
 
 
 def foo(bar: int) -> int:
@@ -86,8 +86,8 @@ def procCase(_case: str) -> list[str] | None:
 				var.constants[command] = var.addr
 				return None
 			tmp = "C_" + command
-			if tmp in func.__dict__:
-				func.__dict__[tmp](split)
+			if tmp in inst._basic_dir:
+				return inst._basic_dir[tmp](split)
 			else:
 				func.raiseError(
 					"Command",

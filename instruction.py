@@ -34,3 +34,6 @@ def C_def(split_: list[str]) -> list[str]:  # Auto Calculated Size
 
 def C_jmp(split_: list[str]) -> list[str]:
 	return [""]
+
+
+_basic_dir = {'C_def': C_def, 'C_jmp': C_jmp}
