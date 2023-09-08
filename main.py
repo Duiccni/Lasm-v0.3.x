@@ -42,7 +42,6 @@ def procCase(_case: str) -> list[str] | None:
 	if not split and command[0].isalpha() and len(command) == 3:
 		return [var.one_inst[command]]
 
-	retu_: list[str] = []
 	match command:
 		case "org":
 			func.raiseError(
@@ -56,29 +55,46 @@ def procCase(_case: str) -> list[str] | None:
 					False,
 					index,
 				)
+			var.constants[split[0]] = func.convertInt(split[1])
 		case "flush":
-			pass
-		case "def":
-			pass
+			var.constants.clear()
 		case "times":
-			pass
-		case "jmp":
-			pass
-		case "not":
-			pass
-		case "neg":
-			pass
-		case "inc":
-			pass
-		case "dec":
-			pass
-		case "mov":
-			pass
-		case "push":
-			pass
-		case "pop":
-			pass
-	return retu_
+			tmp = func.convertInt(split[0])
+			if tmp < 0:
+				func.raiseError(
+					"Index Error",
+					f"The input of 'times' command cant be negative({tmp}).",
+					line=index,
+				)
+				return None
+			TClen += tmp
+			test_case = (
+				test_case[: index + 1]
+				+ [_case[len(split[0]) + 7 :]] * tmp
+				+ test_case[index + 1 :]
+			)
+		case _:
+			if command[0] == ":":
+				command = command[1:]
+				if command in var.constants:
+					func.raiseError(
+						"Constant Overwrite",
+						f"Is acceptable in this version({VERSION}).",
+						False,
+						index,
+					)
+				var.constants[command] = var.addr
+				return None
+			tmp = "C_" + command
+			if tmp in func.__dict__:
+				func.__dict__[tmp](split)
+			else:
+				func.raiseError(
+					"Command",
+					f"'{command}'({'str' if command[0].isalpha() else hex(func.convertInt(command))[2:]}) isn't reconized by Assembler.",
+					line=index,
+				)
+	return None
 
 
 if __name__ == "__main__":
@@ -110,6 +126,7 @@ if __name__ == "__main__":
 			)
 			index += 1
 			continue
+		inst.index = index
 		retu = None if _disable else procCase(case_)
 		if not var.settings.perf_print:
 			print(

@@ -138,12 +138,12 @@ test_cases = (
 		+ [f"mov *0x45ab, {i}" for i in regs8]
 		+ [f"mov *0x4321, {i}" for i in regs16_32]
 		+ [f"mov *0x4a2f, e{i}" for i in regs16_32]
-		# mov *<ptr>, <const> -> *Size = WORD (16 bit)*
+		# mov *<ptr>, <const> -> *Auto Calculated Size.*
 		# mov .<size> *<ptr>, <const>
 		+ [
 			"mov byte *0x1234, 0x10",
 			"mov *0x1234, 0x1000",  # Size = WORD (16 bit)
-			"mov dword *0x1234 0x10000",  # Error
+			"mov dword *0x1234 0x10000",  # Size = DWORD (32 bit)
 		]
 	]
 )
