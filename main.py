@@ -126,7 +126,7 @@ if __name__ == "__main__":
 			)
 			index += 1
 			continue
-		inst.index = index
+		inst._index = index
 		retu = None if _disable else procCase(case_)
 		if not var.settings.perf_print:
 			print(

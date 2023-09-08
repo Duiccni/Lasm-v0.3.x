@@ -88,6 +88,14 @@ def raiseError(
 		exit()
 
 
+def overflowError(size: int, expected: int, index: int) -> None:
+	raiseError(
+		"Overflow Error",
+		f"Used size({size}) is smaller than should({expected}) be used.",
+		line=index,
+	)
+
+
 def zeroExtend(x: str, size: int = var.BYTE, notation: bool = False) -> str:
 	"""
 	Extend string with zeros.
