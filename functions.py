@@ -69,7 +69,13 @@ def toHex(x: int, size: int = var.BYTE) -> str:
 	"""
 	Convert intager value to Hex string even negative values.
 	"""
-	return hex(x % (1 << (size << 2)))
+	tmp = 1 << (size << 2)
+	if x > tmp:
+		raiseError(
+			"Overflow Error",
+			f"toHex function found input 'x'({x}) is bigger than size({tmp})."
+		)
+	return hex(x % tmp)
 
 
 def raiseError(
@@ -79,11 +85,12 @@ def raiseError(
 	Print an error message acording Assembler settings.
 	And exit if it is an error.
 	"""
-	print(
-		var.colors.WARNING + title + ":",
-		(var.colors.ERROR if error else var.colors.SECOND) + msg + var.colors.ENDL,
-		f"{var.colors.ITALIC}(Line {line if line != None else '?'}.){var.colors.ENDL}",
-	)
+	if var.settings.print_error:
+		print(
+			var.colors.WARNING + title + ":",
+			(var.colors.ERROR if error else var.colors.SECOND) + msg + var.colors.ENDL,
+			f"{var.colors.ITALIC}(Line {line if line != None else '?'}.){var.colors.ENDL}",
+		)
 	if error and var.settings.exit_on_errors:
 		exit()
 

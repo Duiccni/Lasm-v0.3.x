@@ -1,12 +1,14 @@
 org $borg
 con n1 ($ + 5)
 def .dword ?
-def .word -0x10
+def -0x10
+def .byte "Hello, world!", ?
+#set 0x13
 '''
+#jmp 10
 This is an text message. :D
 Hello, world!
 '''
-def .byte "Hello, world!", '&', ?
 :here
 nop
 hlt
@@ -17,5 +19,20 @@ neg *0x4321
 not .dword *0x4321
 dec ax
 inc .byte *0x032
-times (^4 - 2 - $ + $$) def .x8 0x90
+// Line 0x13(19)
+times (^6 - 2 - $ + $$) def .x8 0x90
 def $mbr
+unknown
+0x7400
+'''
+mov <reg>, <const>
+mov <reg>, <ptr>
+mov <reg>, <reg>
+mov <ptr>, <reg>
+mov <size> <ptr>, <const>
+mov <ptr>, <const> *Auto Calculated Size*
+'''
+mov dx, 0x7432a
+mov si, 0x7432
+mov bh, 0x7432
+mov eax, 0x7432

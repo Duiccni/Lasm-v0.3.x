@@ -23,8 +23,9 @@ test_case = var.test_cases[0]
 
 TClen = len(test_case)
 _disable = False
+index = 0
 
-var.settings.mode(28, False, False, False)
+var.settings.mode(24, False, False, True, True)
 
 
 def foo(bar: int) -> int:
@@ -34,7 +35,7 @@ def foo(bar: int) -> int:
 
 
 def procCase(_case: str) -> list[str] | None:
-	global test_case, TClen, _disable
+	global test_case, TClen, _disable, index
 	split = func.splitWithoutSpecs(_case)
 	command = split[0]
 	split.pop(0)
@@ -43,6 +44,10 @@ def procCase(_case: str) -> list[str] | None:
 		return [var.one_inst[command]]
 
 	match command:
+		case "#jmp":
+			index += int(split[0], 0)
+		case "#set":
+			index = int(split[0], 0)
 		case "org":
 			func.raiseError(
 				"Command", "'org' can only be used in fist line of code.", False, index
@@ -91,7 +96,7 @@ def procCase(_case: str) -> list[str] | None:
 			else:
 				func.raiseError(
 					"Command",
-					f"'{command}'({'str' if command[0].isalpha() else hex(func.convertInt(command))[2:]}) isn't reconized by Assembler.",
+					f"'{command}'({'str' if command[0].isalpha() else hex(func.convertInt(command))}) isn't reconized by Assembler.",
 					line=index,
 				)
 	return None
@@ -110,12 +115,11 @@ if __name__ == "__main__":
 		test_case.pop(0)
 		TClen -= 1
 
-	index = 0
 	while index < TClen:
 		case_ = test_case[index]
 		if case_ == "'''":
 			print(
-				f"{func.zeroExtend(hex(index % 0x100))}\t {var.colors.DARK}'''{var.colors.ENDL}"
+				f"\t {var.colors.DARK}'''{var.colors.ENDL}"
 			)
 			_disable = not _disable
 			index += 1
@@ -127,12 +131,13 @@ if __name__ == "__main__":
 			index += 1
 			continue
 		inst._index = index
-		retu = None if _disable else procCase(case_)
+		_turn = _disable or case_.startswith("//")
+		retu = None if _turn else procCase(case_)
 		if not var.settings.perf_print:
 			print(
-				func.zeroExtend(hex(index % 0x100)) + var.colors.DARK,
+				("" if _turn else func.zeroExtend(hex(index % 0x100))) + var.colors.DARK,
 				("" if not retu else func.zeroExtend(hex(var.addr), var.WORD))
-				+ ("" if _disable else var.colors.ENDL)
+				+ ("" if _turn else var.colors.ENDL)
 				+ "\t",
 				case_,
 				end=var.colors.ENDL,

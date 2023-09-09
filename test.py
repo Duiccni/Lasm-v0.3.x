@@ -1,7 +1,16 @@
-@staticmethod
-def foo(arg: float) -> float:
-    x2 = arg + 3.4
-    return -(20 / x2 / x2) + 2 + arg / 8
+a = 1
+b = 2
+c = 3
 
-for i in range(20):
-    print(i / 5, foo(i / 5))
+x = b
+y = c
+
+match (x, y):
+    case (c, b):
+        print(x, y, a, b)
+        print(b)
+        print(c)
+    case (b, ):
+        print(x, y, b, b)
+    case (b, c):
+        print(x, y, c, b)

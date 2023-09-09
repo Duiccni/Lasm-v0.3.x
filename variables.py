@@ -10,6 +10,7 @@ class settings:
 	exit_on_errors = False
 	perf_print = False
 	skip_times = False
+	print_error = True
 
 	def mode(*args: Any) -> None:
 		"""
@@ -20,6 +21,7 @@ class settings:
 		settings.exit_on_errors = args[1]
 		settings.perf_print = args[2]
 		settings.skip_times = args[3]
+		settings.print_error = args[4]
 
 
 class colors:
