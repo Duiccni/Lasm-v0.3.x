@@ -30,7 +30,7 @@ class colors:
 	"""
 
 	ITALIC = "\033[3m"
-	DARK = "\033[30m"
+	DARK = "\033[90m"
 	SECOND = "\033[34m"
 	ERROR = "\033[31m"
 	WARNING = "\033[93m"
