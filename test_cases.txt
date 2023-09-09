@@ -1,0 +1,21 @@
+org $borg
+con n1 ($ + 5)
+def .dword ?
+def .word -0x10
+'''
+This is an text message. :D
+Hello, world!
+'''
+def .byte "Hello, world!", '&', ?
+:here
+nop
+hlt
+jmp .short &here
+not eax
+not si
+neg *0x4321
+not .dword *0x4321
+dec ax
+inc .byte *0x032
+times (^4 - 2 - $ + $$) def .x8 0x90
+def $mbr

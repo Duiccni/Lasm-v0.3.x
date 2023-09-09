@@ -19,12 +19,12 @@ import instruction as inst
 # for _sub in var.test_cases:
 # 	test_case += _sub
 
-test_case = ["org $borg", "con n1 0x100", "def .byte 0xff"]
+test_case = var.test_cases[0]
 
 TClen = len(test_case)
 _disable = False
 
-var.settings.mode(20, False, False, False)
+var.settings.mode(28, False, False, False)
 
 
 def foo(bar: int) -> int:

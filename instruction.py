@@ -41,6 +41,8 @@ def C_jmp(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)
 		if len(split_) == 1
 		else (split_[1], var.sizes[split_[0][1:]])
 	)
+	if value == "$":
+		size = var.BYTE
 	value = func.convertInt(value) - var.addr - 1 - (size >> 1)
 	retu_: list[str] = []
 	if size == var.DWORD:
@@ -117,7 +119,17 @@ def C_pop(split_: list[str]) -> list[str]:
 	return [""]
 
 
-_basic_dir = {"C_def": C_def, "C_jmp": C_jmp, "C_not": C_not, "C_neg": C_neg}
+_basic_dir = {
+	"C_def": C_def,
+	"C_jmp": C_jmp,
+	"C_not": C_not,
+	"C_neg": C_neg,
+	"C_inc": C_inc,
+	"C_dec": C_dec,
+	"C_mov": C_mov,
+	"C_push": C_push,
+	"C_pop": C_pop,
+}
 
 if __name__ == "__main__":
 	print(_Cglobal_mC([".x32", "*0x1243"], [0xA0, 0xF0, "03"]))
