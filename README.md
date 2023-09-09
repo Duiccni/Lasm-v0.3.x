@@ -24,7 +24,7 @@ To get started, you will need to install Python 3.6 or later
 Once you have Python installed, you can clone the LASM repository from GitHub:
 
 ```
-git clone https://github.com/Duiccni/LASM.git
+git clone https://github.com/Duiccni/Lasm-v0.3.x.git
 ```
 
 ### Error Checking
