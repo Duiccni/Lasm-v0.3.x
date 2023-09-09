@@ -184,7 +184,6 @@ def getRegister(x: str, mod: bool = True) -> tuple[int, int]:
 	>>> getRegister("ds")  # Segment Register
 	(2, -1)
 	"""
-
 	if x in var.seg_regs:
 		return (var.seg_regs.index(x), -1)
 

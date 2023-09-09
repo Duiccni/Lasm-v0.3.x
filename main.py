@@ -25,7 +25,7 @@ TClen = len(test_case)
 _disable = False
 index = 0
 
-var.settings.mode(24, False, False, True, True)
+var.settings.mode(24, False, False, True, True, True)
 
 
 def foo(bar: int) -> int:
@@ -35,6 +35,8 @@ def foo(bar: int) -> int:
 
 
 def procCase(_case: str) -> list[str] | None:
+	if _case == "":
+		return
 	global test_case, TClen, _disable, index
 	split = func.splitWithoutSpecs(_case)
 	command = split[0]
@@ -43,11 +45,15 @@ def procCase(_case: str) -> list[str] | None:
 	if not split and command[0].isalpha() and len(command) == 3:
 		return [var.one_inst[command]]
 
+	if var.settings.debug and command[0] == "#":
+		match command:
+			case "#jmp":
+				index += int(split[0], 0)
+			case "#set":
+				index = int(split[0], 0)
+		return
+
 	match command:
-		case "#jmp":
-			index += int(split[0], 0)
-		case "#set":
-			index = int(split[0], 0)
 		case "org":
 			func.raiseError(
 				"Command", "'org' can only be used in fist line of code.", False, index
@@ -71,7 +77,7 @@ def procCase(_case: str) -> list[str] | None:
 					f"The input of 'times' command cant be negative({tmp}).",
 					line=index,
 				)
-				return None
+				return
 			TClen += tmp
 			test_case = (
 				test_case[: index + 1]
@@ -89,7 +95,7 @@ def procCase(_case: str) -> list[str] | None:
 						index,
 					)
 				var.constants[command] = var.addr
-				return None
+				return
 			tmp = "C_" + command
 			if tmp in inst._basic_dir:
 				return inst._basic_dir[tmp](split)
@@ -99,7 +105,7 @@ def procCase(_case: str) -> list[str] | None:
 					f"'{command}'({'str' if command[0].isalpha() else hex(func.convertInt(command))}) isn't reconized by Assembler.",
 					line=index,
 				)
-	return None
+	return
 
 
 if __name__ == "__main__":
@@ -119,7 +125,7 @@ if __name__ == "__main__":
 		case_ = test_case[index]
 		if case_ == "'''":
 			print(
-				f"\t {var.colors.DARK}'''{var.colors.ENDL}"
+				f"{func.zeroExtend(hex(index % 0x100))}\t {var.colors.DARK}'''{var.colors.ENDL}"
 			)
 			_disable = not _disable
 			index += 1
@@ -135,7 +141,7 @@ if __name__ == "__main__":
 		retu = None if _turn else procCase(case_)
 		if not var.settings.perf_print:
 			print(
-				("" if _turn else func.zeroExtend(hex(index % 0x100))) + var.colors.DARK,
+				func.zeroExtend(hex(index % 0x100)) + var.colors.DARK,
 				("" if not retu else func.zeroExtend(hex(var.addr), var.WORD))
 				+ ("" if _turn else var.colors.ENDL)
 				+ "\t",

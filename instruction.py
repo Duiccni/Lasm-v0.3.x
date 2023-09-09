@@ -87,10 +87,10 @@ def C_neg(split_: list[str]) -> list[str]:
 
 
 def _Cinc_mC(split_: list[str], bias: int) -> list[str]:
-	if split_[0][0] == "." or split_[0][0].isdigit():
-		return _Cglobal_mC(split_, var.spec_inst["inc"])
-	index, size = func.getRegister(split_[0])
-	return ([var.STR_BIT_32] if size == var.DWORD else []) + [hex(bias + index)[2:]]
+	if split_[0][0].isalpha() and split_[0][1] not in "lh":
+		index, size = func.getRegister(split_[0])
+		return ([var.STR_BIT_32] if size == var.DWORD else []) + [hex(bias + index)[2:]]
+	return _Cglobal_mC(split_, var.spec_inst["inc" if bias == 0x40 else "dec"])
 
 
 def C_inc(split_: list[str]) -> list[str]:
@@ -104,12 +104,14 @@ def C_dec(split_: list[str]) -> list[str]:
 _CONST = 0
 _PTR = 1
 _REG = 2
+
+
 def _convertIt(x: str, mod_reg: bool = True) -> tuple[Any, int]:
-	if x[0].isdigit():
-		return func.convertInt(x), _CONST
+	if x[0].isalpha():
+		return func.getRegister(x, mod_reg), _REG
 	if x[0] == "*":
 		return func.convertInt(x[1:]), _PTR
-	return func.getRegister(x, mod_reg), _REG
+	return func.convertInt(x), _CONST
 
 
 def _Cmov_sC(reg: int, val: int, size: int, bias: int) -> list[str]:
@@ -117,9 +119,7 @@ def _Cmov_sC(reg: int, val: int, size: int, bias: int) -> list[str]:
 	if reg == 0:
 		return _Cglobal_sC(size, 0xA0 + bias) + tmp2
 	return (
-		_Cglobal_sC(size, 0x8A + bias)
-		+ [func.zeroExtend(hex((reg << 3) + 6))]
-		+ tmp2
+		_Cglobal_sC(size, 0x8A + bias) + [func.zeroExtend(hex((reg << 3) + 6))] + tmp2
 	)
 
 
@@ -140,14 +140,14 @@ def _Cmov_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 		size = val1[1] if tmp1 else val2[1]
 	if type == (_REG, _CONST):
 		retu.append(hex(0xB0 + val1[0])[2:])
-		retu += func.memoryProc(val2, size) # type: ignore
+		retu += func.memoryProc(val2, size)  # type: ignore
 	else:
 		if tmp1:
 			tmp = val1[0] % var.REG_INDEX_LEN
 		if type == (_REG, _PTR):
-			return _Cmov_sC(tmp, val2, size, 0) # type: ignore
+			return _Cmov_sC(tmp, val2, size, 0)  # type: ignore
 		elif type == (_REG, _REG):
-			if tmp == val2[0]: # type: ignore
+			if tmp == val2[0]:  # type: ignore
 				func.raiseError(
 					"Warning",
 					"You are trying to move a register to itself.",
@@ -155,7 +155,7 @@ def _Cmov_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 					_index,
 				)
 			retu.append("88" if size == var.BYTE else "89")
-			retu.append(hex(0xC0 + tmp + (val2[0] << 3))[2:]) # type: ignore
+			retu.append(hex(0xC0 + tmp + (val2[0] << 3))[2:])  # type: ignore
 		elif type == (_PTR, _CONST):
 			tmp2 = func.findSize(val2)
 			if not size:
@@ -164,10 +164,10 @@ def _Cmov_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 				func.overflowError(size, tmp2, _index)
 			retu.append("c6" if size == var.BYTE else "c7")
 			retu.append("06")
-			retu += func.memoryProc(val1[0], var.WORD)
-			retu += func.memoryProc(val2[0], size)
+			retu += func.memoryProc(val1, var.WORD)
+			retu += func.memoryProc(val2, size)
 		elif type == (_PTR, _REG):
-			return _Cmov_sC(val2[0], val1, size, 2) # type: ignore
+			return _Cmov_sC(val2[0], val1, size, 2)  # type: ignore
 	return [var.STR_BIT_32] + retu if size == var.DWORD else retu
 
 

@@ -3,7 +3,7 @@ con n1 ($ + 5)
 def .dword ?
 def -0x10
 def .byte "Hello, world!", ?
-#set 0x13
+#set 0x34
 '''
 #jmp 10
 This is an text message. :D
@@ -26,13 +26,30 @@ unknown
 0x7400
 '''
 mov <reg>, <const>
-mov <reg>, <ptr>
+mov <reg>, *<ptr>
 mov <reg>, <reg>
-mov <ptr>, <reg>
-mov <size> <ptr>, <const>
-mov <ptr>, <const> *Auto Calculated Size*
+mov *<ptr>, <reg>
+mov .<size> <ptr>, <const>
+mov *<ptr>, <const> *Auto Calculated Size*
 '''
+// mov <reg>, <const>
 mov dx, 0x7432a
 mov si, 0x7432
 mov bh, 0x7432
 mov eax, 0x7432
+// mov <reg>, *<ptr>
+mov eax, *0x4321
+mov bx, *0x4321
+mov si, *0x4321
+mov ah, *0x4321
+// mov <reg>, <reg>
+mov eax, esi
+mov bx, cx
+mov ah, ah
+mov dl, dl
+// mov *<ptr>, <reg>
+mov *0x4321, eax
+// mov .<size> *<ptr>, <const>
+mov .word *0x4321, ?
+mov *0x4321, 0x7c
+// Line 0x35
