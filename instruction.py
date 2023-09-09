@@ -1,5 +1,6 @@
 import functions as func
 import variables as var
+from typing import Any
 
 _index = 0
 
@@ -53,4 +54,70 @@ def C_jmp(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)
 	return retu_
 
 
-_basic_dir = {"C_def": C_def, "C_jmp": C_jmp}
+def _Cglobal_sC(size: int, bias: int) -> list[str]:
+	return ([var.STR_BIT_32] if size == var.DWORD else []) + [
+		hex(bias + (size != var.BYTE))[2:]
+	]
+
+
+def _Cglobal_mC(split_: list[str], *args: Any) -> list[str]:
+	if len(args) == 1:
+		args = args[0]
+	if split_[0][0].isalpha():
+		index, size = func.getRegister(split_[0])
+		return _Cglobal_sC(size, args[1]) + [hex(args[0] + index)[2:]]
+	value, size = (
+		(split_[0], var.WORD)
+		if len(split_) == 1
+		else (split_[1], var.sizes[split_[0][1:]])
+	)
+	return (
+		_Cglobal_sC(size, args[1])
+		+ [args[2]]
+		+ func.memoryProc(func.convertInt(value[1:]), var.WORD)
+	)
+
+
+def C_not(split_: list[str]) -> list[str]:
+	return _Cglobal_mC(split_, var.spec_inst["not"])
+
+
+def C_neg(split_: list[str]) -> list[str]:
+	return _Cglobal_mC(split_, var.spec_inst["neg"])
+
+
+def _Cinc_mC(split_: list[str], bias: int) -> list[str]:
+	if split_[0][0] == "." or split_[0][0].isdigit():
+		return _Cglobal_mC(split_, var.spec_inst["inc"])
+	index, size = func.getRegister(split_[0])
+	return ([var.STR_BIT_32] if size == var.DWORD else []) + [hex(bias + index)[2:]]
+
+
+def C_inc(split_: list[str]) -> list[str]:
+	return _Cinc_mC(split_, 0x40)
+
+
+def C_dec(split_: list[str]) -> list[str]:
+	return _Cinc_mC(split_, 0x48)
+
+
+def C_mov(split_: list[str]) -> list[str]:
+	if split_[0][0] == ".":
+		return [""]
+	return [""]
+
+def C_push(split_: list[str]) -> list[str]:
+	if split_[0][0] == ".":
+		return [""]
+	return [""]
+
+def C_pop(split_: list[str]) -> list[str]:
+	if split_[0][0] == ".":
+		return [""]
+	return [""]
+
+
+_basic_dir = {"C_def": C_def, "C_jmp": C_jmp, "C_not": C_not, "C_neg": C_neg}
+
+if __name__ == "__main__":
+	print(_Cglobal_mC([".x32", "*0x1243"], [0xA0, 0xF0, "03"]))
