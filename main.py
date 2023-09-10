@@ -27,7 +27,7 @@ index = 0
 _times_c_active = False
 _times_cooldown = 0
 
-var.settings.mode(22, False, False, False, False, True, True)
+var.settings.mode(24, 24, False, False, False, False, True, True)
 
 
 def foo(bar: int) -> int:
@@ -36,12 +36,19 @@ def foo(bar: int) -> int:
 	return foo(bar - 1) * bar
 
 
-def printOutput(case_: str, retu: list[str], args: tuple[int, int, str] | None = None) -> None:
+def printOutput(
+	case_: str, retu: list[str], args: tuple[int, int, str] | None = None
+) -> None:
 	if not var.settings.perf_print and (_times_cooldown <= 0 or _times_c_active):
 		if args == None:
 			args = (index, var.addr)
 		else:
-			func.raiseError("Line Rewrite", f"Function get wanted value({args[2]}) and function rewrited as:", False, args[0])
+			func.raiseError(
+				"Line Rewrite",
+				f"Function get wanted value({args[2]}) and function rewrited as:",
+				False,
+				args[0],
+			)
 		print(
 			func.zeroExtend(hex(args[0] % 0x100)) + var.colors.DARK,
 			("" if not retu else func.zeroExtend(hex(args[1]), var.WORD))
@@ -74,7 +81,11 @@ def runOldWaiter(value: str) -> None:
 		if waiter.check(value):
 			tmp = waiter.command(waiter.args[0], waiter.args[1], waiter.args[2])
 			var.replaceMemory(waiter.start_i, tmp)
-			printOutput(test_case[waiter.inst_i], tmp, (waiter.inst_i, waiter.start_i + var.orgin, waiter.name))
+			printOutput(
+				"(" + test_case[waiter.inst_i] + ")",
+				tmp,
+				(waiter.inst_i, waiter.start_i + var.orgin, waiter.name),
+			)
 			del waiter
 			break
 
@@ -202,5 +213,17 @@ if __name__ == "__main__":
 
 	print("\nSize:", len(var.memory))
 	print(f"Time(μs): {(time.time() - start_t) * 1_000_000:,.0f}")
-	print(var.colors.DARK + " ".join(var.memory))
+	print(
+		var.colors.DARK
+		+ "\n".join(
+			[
+				" ".join(
+					var.memory[
+						i : min(i + var.settings.memory_sub_size, len(var.memory))
+					]
+				)
+				for i in range(0, len(var.memory), var.settings.memory_sub_size)
+			]
+		)
+	)
 	print(var.constants, var.colors.ENDL)

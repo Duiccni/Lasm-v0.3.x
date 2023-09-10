@@ -7,6 +7,7 @@ class settings:
 	Assembler settings like exit_on_errors.
 	"""
 
+	memory_sub_size = 16
 	tab_size = 20
 	exit_on_errors = False
 	perf_print = False
@@ -19,13 +20,14 @@ class settings:
 		Change assembler settings. (len -> 5)
 		"""
 
-		settings.tab_size = args[0]
-		settings.exit_on_errors = args[1]
-		settings.perf_print = args[2]
-		settings.skip_times = args[3]
-		settings.show_times = args[4]
-		settings.print_error = args[5]
-		settings.debug = args[6]
+		settings.memory_sub_size = args[0]
+		settings.tab_size = args[1]
+		settings.exit_on_errors = args[2]
+		settings.perf_print = args[3]
+		settings.skip_times = args[4]
+		settings.show_times = args[5]
+		settings.print_error = args[6]
+		settings.debug = args[7]
 
 
 class colors:

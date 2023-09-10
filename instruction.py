@@ -48,7 +48,7 @@ def _Cjmp_call_mC(split_: list[str], addr: int, args: tuple[int, bool]) -> list[
 	tmp2 = func.convertInt(value)
 	tmp3 = 1 + (size >> 1) + (size == var.DWORD)
 	if type(tmp2) == str:
-		var.value_waiters.append(var.waiter(tmp2, var.addr - var.orgin, _index, _Cjmp_call_mC, [split_, var.addr, (0xE0, False)]))
+		var.value_waiters.append(var.waiter(tmp2, var.addr - var.orgin, _index, _Cjmp_call_mC, [split_, var.addr, args]))
 		return ["XX"] * tmp3
 	value = tmp2 - addr - tmp3
 	retu_: list[str] = []
@@ -67,7 +67,7 @@ def C_jmp(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)
 
 
 def C_call(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)
-	return _Cjmp_call_mC(split_, (0xD0, True))
+	return _Cjmp_call_mC(split_, var.addr, (0xD0, True))
 
 
 def _Cglobal_sC(size: int, bias: int) -> list[str]:
