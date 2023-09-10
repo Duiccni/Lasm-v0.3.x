@@ -1,4 +1,4 @@
-# LASM v0.3.1 (On Work)
+# LASM v0.3.2 (On Work)
 Lime Assembler
 This is a simple **32-bit x86 assembly** language written in **Python 3.11.5**.
 Its supports basic x86 instructions and some advanced commands.
@@ -27,6 +27,7 @@ Once you have Python installed, you can clone the LASM repository from GitHub:
 git clone https://github.com/Duiccni/Lasm-v0.3.x.git
 ```
 
-### Error Checking
+### Unlimited Thanks For
 
-LASM has a Error Checking system for finding bugs more easly.
+* NASM (Netwide Assembler)
+* HxD (Software)
