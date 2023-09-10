@@ -51,6 +51,7 @@ sizes = {
 	"x16": WORD,
 	"x32": DWORD,
 	"short": BYTE,
+	"near": WORD,
 	"long": DWORD,
 }
 
@@ -63,7 +64,7 @@ STR_BIT_32 = "66"
 
 regs8 = ["al", "cl", "dl", "bl", "ah", "ch", "dh", "bh"]
 regs16_32 = ["ax", "cx", "dx", "bx", "sp", "bp", "si", "di"]
-seg_regs = ["cs", "ss", "ds", "es", "fs", "gs"]
+seg_regs = ["es", "cs", "ss", "ds", "fs", "gs"]
 
 str_regs = regs8 + regs16_32
 
@@ -71,22 +72,35 @@ str_regs = regs8 + regs16_32
 REG_INDEX_LEN = 8
 
 one_inst = {
-	"hlt": "f4",
-	"nop": "90",
-	"cmc": "f5",
-	"clc": "f8",
-	"stc": "f9",
-	"cli": "fa",
-	"sti": "fb",
-	"cld": "fc",
-	"std": "fd",
-}
+	"hlt": ["f4"],
+	"nop": ["90"],
+	"cmc": ["f5"],
+	"clc": ["f8"],
+	"stc": ["f9"],
+	"cli": ["fa"],
+	"sti": ["fb"],
+	"cld": ["fc"],
+	"std": ["fd"],
+	"popa": ["61"],
+	"popad": [STR_BIT_32, "61"],
+	"pusha": ["60"],
+	"pushad": [STR_BIT_32, "60"],
+	"ret": ["c3"],
+	"sret": ["c3"],
+	"fret": ["cb"],
+	"int3": ["cc"],
+	"int0": ["ce"],
+	"int1": ["f1"],
+	"syscall": ["0f", "05"],
+} 
 
 spec_inst = {
 	"not": (0xD0, 0xF6, "16"),
 	"neg": (0xD8, 0xF6, "1e"),
 	"inc": (0xC0, 0xFE, "06"),
 	"dec": (0xC8, 0xFE, "0e"),
+	"push": (0x50, "ff", "36"),
+	"pop": (0x58, "8f", "06"),
 }
 
 spec_values = {

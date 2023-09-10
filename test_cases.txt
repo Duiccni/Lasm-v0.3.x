@@ -53,3 +53,25 @@ mov *0x4321, eax
 mov .word *0x4321, ?
 mov *0x4321, 0x7c
 // Line 0x35
+mov fs, *0x3210
+mov *0x3210, gs
+pop eax
+pop ah
+pop esi
+pop cx
+pop 0x43
+pop 0x4321
+pop .dword ?
+push *0x75631
+pop *0x75631
+pop ds
+pop es
+pop ss
+pop fs
+---
+:here
+ret
+int 0x10
+call $
+call .near &here
+call .long &here

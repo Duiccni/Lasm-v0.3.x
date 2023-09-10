@@ -19,7 +19,7 @@ import instruction as inst
 # for _sub in var.test_cases:
 # 	test_case += _sub
 
-test_case = var.test_cases[0]
+test_case = var.test_cases[1]
 
 TClen = len(test_case)
 _disable = False
@@ -42,8 +42,8 @@ def procCase(_case: str) -> list[str] | None:
 	command = split[0]
 	split.pop(0)
 
-	if not split and command[0].isalpha() and len(command) == 3:
-		return [var.one_inst[command]]
+	if not split and command in var.one_inst:
+		return var.one_inst[command]
 
 	if var.settings.debug and command[0] == "#":
 		match command:
