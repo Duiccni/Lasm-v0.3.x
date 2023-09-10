@@ -27,6 +27,7 @@ Once you have Python installed, you can clone the LASM repository from GitHub:
 git clone https://github.com/Duiccni/Lasm-v0.3.x.git
 ```
 
-### Error Checking
+### Unlimited Thanks For
 
-LASM has a Error Checking system for finding bugs more easly.
+* NASM (Netwide Assembler)
+* HxD (Software)
