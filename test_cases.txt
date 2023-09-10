@@ -121,11 +121,26 @@ add .byte *0x4321, 0xabcd
 add *0x4321, 0xab
 add .dword *0x4321, 0xabcd
 ---
+org $borg
 // al := num1
 // num2 := num1 + num2
+jmp &start
 :num1
 def .byte 0x50
 :num2
 def .byte 0x0f
-mov al, &num1
-add *&num2, al
+:res
+def .byte ?
+
+:start
+mov al, *&num1
+mov cl, *&num2
+add al, cl
+
+mov *&res, al
+mov dl, *&res
+
+hlt
+jmp $
+times (^9 - 2 - $ + $$) def .x8 ?
+def .word $mbr

@@ -2,7 +2,7 @@ from typing import Any
 import variables as var
 
 
-def toInt(x: str) -> int:
+def toInt(x: str) -> int | str:
 	"""
 	Converts string value to intager value.
 	Like int(x) function but specialized for Assembler.
@@ -14,7 +14,9 @@ def toInt(x: str) -> int:
 			return var.orgin
 		return var.spec_values[x[1:]]
 	if x[0] == "&":
-		return var.constants[x[1:]]
+		if x[1:] in var.constants:
+			return var.constants[x[1:]]
+		return x[1:]
 	if x[0] == "?":
 		return 0
 	if x[0] == "'":
@@ -46,7 +48,7 @@ def _calculate(x: str) -> int:
 	return retu + toInt(tmp) * (-1 if sign else 1)
 
 
-def convertInt(x: str) -> int:
+def convertInt(x: str) -> int | str:
 	"""
 	This converts string to int like toInt(x) but this is
 	checks input is calculateble value or not.

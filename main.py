@@ -24,8 +24,10 @@ test_case = var.test_cases[3]
 TClen = len(test_case)
 _disable = False
 index = 0
+_times_c_active = False
+_times_cooldown = 0
 
-var.settings.mode(26, False, False, True, True, True)
+var.settings.mode(22, False, False, False, False, True, True)
 
 
 def foo(bar: int) -> int:
@@ -34,10 +36,55 @@ def foo(bar: int) -> int:
 	return foo(bar - 1) * bar
 
 
+def printOutput(case_: str, retu: list[str], args: tuple[int, int, str] | None = None) -> None:
+	if not var.settings.perf_print and (_times_cooldown <= 0 or _times_c_active):
+		if args == None:
+			args = (index, var.addr)
+		else:
+			func.raiseError("Line Rewrite", f"Function get wanted value({args[2]}) and function rewrited as:", False, args[0])
+		print(
+			func.zeroExtend(hex(args[0] % 0x100)) + var.colors.DARK,
+			("" if not retu else func.zeroExtend(hex(args[1]), var.WORD))
+			+ ("" if _turn else var.colors.ENDL)
+			+ "\t",
+			case_,
+			end=var.colors.ENDL,
+		)
+		if not retu:
+			print()
+		else:
+			tmp = var.settings.tab_size - len(case_)
+			print(
+				" " * tmp + var.colors.DARK,
+				("" if retu[0] == var.STR_BIT_32 else "   ")
+				+ " ".join(retu)
+				+ var.colors.ENDL,
+			)
+			if tmp < 0:
+				func.raiseError(
+					"Print Breakpoint",
+					f"var.settings.tab_size({var.settings.tab_size}, +{-tmp}) not big enough.",
+					False,
+					args[0],
+				)
+
+
+def runOldWaiter(value: str) -> None:
+	for waiter in var.value_waiters:
+		if waiter.check(value):
+			tmp = waiter.command(waiter.args[0], waiter.args[1], waiter.args[2])
+			var.replaceMemory(waiter.start_i, tmp)
+			printOutput(test_case[waiter.inst_i], tmp, (waiter.inst_i, waiter.start_i + var.orgin, waiter.name))
+			del waiter
+			break
+
+
 def procCase(_case: str) -> list[str] | None:
 	if _case == "":
 		return
-	global test_case, TClen, _disable, index
+	if _case[0] == ";":
+		_case = _case[1:]
+	global test_case, TClen, _disable, index, _times_cooldown, _times_c_active
 	split = func.splitWithoutSpecs(_case)
 	command = split[0]
 	split.pop(0)
@@ -67,6 +114,7 @@ def procCase(_case: str) -> list[str] | None:
 					index,
 				)
 			var.constants[split[0]] = func.convertInt(split[1])
+			runOldWaiter(split[0])
 		case "flush":
 			var.constants.clear()
 		case "times":
@@ -78,6 +126,9 @@ def procCase(_case: str) -> list[str] | None:
 					line=index,
 				)
 				return
+			if not var.settings.show_times:
+				_times_c_active = True
+				_times_cooldown = tmp
 			TClen += tmp
 			test_case = (
 				test_case[: index + 1]
@@ -95,6 +146,7 @@ def procCase(_case: str) -> list[str] | None:
 						index,
 					)
 				var.constants[command] = var.addr
+				runOldWaiter(command)
 				return
 			tmp = "C_" + command
 			if tmp in inst._basic_dir:
@@ -139,32 +191,10 @@ if __name__ == "__main__":
 		inst._index = index
 		_turn = _disable or case_.startswith("//")
 		retu = None if _turn else procCase(case_)
-		if not var.settings.perf_print:
-			print(
-				func.zeroExtend(hex(index % 0x100)) + var.colors.DARK,
-				("" if not retu else func.zeroExtend(hex(var.addr), var.WORD))
-				+ ("" if _turn else var.colors.ENDL)
-				+ "\t",
-				case_,
-				end=var.colors.ENDL,
-			)
-			if not retu:
-				print()
-			else:
-				tmp = var.settings.tab_size - len(case_)
-				print(
-					" " * tmp + var.colors.DARK,
-					("" if retu[0] == var.STR_BIT_32 else "   ")
-					+ " ".join(retu)
-					+ var.colors.ENDL,
-				)
-				if tmp < 0:
-					func.raiseError(
-						"Print Breakpoint",
-						f"var.settings.tab_size({var.settings.tab_size}, +{-tmp}) not big enough.",
-						False,
-						index,
-					)
+		printOutput(case_, retu)
+		if not var.settings.show_times:
+			_times_c_active = False
+			_times_cooldown -= 1
 		if retu:
 			var.addr += len(retu)
 			var.memory += retu

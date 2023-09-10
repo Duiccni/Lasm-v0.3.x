@@ -31,7 +31,7 @@ def C_def(split_: list[str]) -> list[str]:  # Auto Calculated Size
 	return retu
 
 
-def _Cjmp_call_mC(split_: list[str], args: tuple[int, bool]) -> list[str]:
+def _Cjmp_call_mC(split_: list[str], addr: int, args: tuple[int, bool]) -> list[str]:
 	if split_[0][0].isalpha():
 		index, size = func.getRegister(split_[0])
 		return ([var.STR_BIT_32] if size == var.DWORD else []) + [
@@ -44,11 +44,15 @@ def _Cjmp_call_mC(split_: list[str], args: tuple[int, bool]) -> list[str]:
 		else (split_[1], var.sizes[split_[0][1:]])
 	)
 	if value == "$":
-		size = var.BYTE
-	value = func.convertInt(value) - var.addr - 1 - (size >> 1)
+		return ["eb", "fe"]
+	tmp2 = func.convertInt(value)
+	tmp3 = 1 + (size >> 1) + (size == var.DWORD)
+	if type(tmp2) == str:
+		var.value_waiters.append(var.waiter(tmp2, var.addr - var.orgin, _index, _Cjmp_call_mC, [split_, var.addr, (0xE0, False)]))
+		return ["XX"] * tmp3
+	value = tmp2 - addr - tmp3
 	retu_: list[str] = []
 	if size == var.DWORD:
-		value -= 1
 		retu_.append(var.STR_BIT_32)
 	tmp = func.findSize(value, forge_signed=True)
 	if size < tmp:
@@ -59,7 +63,7 @@ def _Cjmp_call_mC(split_: list[str], args: tuple[int, bool]) -> list[str]:
 
 
 def C_jmp(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)
-	return _Cjmp_call_mC(split_, (0xE0, False))
+	return _Cjmp_call_mC(split_, var.addr, (0xE0, False))
 
 
 def C_call(split_: list[str]) -> list[str]:  # Size equals Word (16 bit)

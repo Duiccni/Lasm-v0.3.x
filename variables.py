@@ -1,4 +1,5 @@
 from typing import Any
+from collections.abc import Callable
 
 
 class settings:
@@ -22,8 +23,9 @@ class settings:
 		settings.exit_on_errors = args[1]
 		settings.perf_print = args[2]
 		settings.skip_times = args[3]
-		settings.print_error = args[4]
-		settings.debug = args[4]
+		settings.show_times = args[4]
+		settings.print_error = args[5]
+		settings.debug = args[6]
 
 
 class colors:
@@ -37,6 +39,21 @@ class colors:
 	ERROR = "\033[31m"
 	WARNING = "\033[93m"
 	ENDL = "\033[0m"
+
+
+class waiter:
+	def __init__(self, name: str, start_i: int, inst_i: int, command: Callable, args: list[Any]) -> None:
+		self.inst_i = inst_i
+		self.name = name
+		self.start_i = start_i
+		self.command = command
+		self.args = args
+	
+	def check(self, value: str) -> bool:
+		return self.name == value
+
+
+value_waiters: list[waiter] = []
 
 
 BYTE = 2
@@ -110,6 +127,12 @@ spec_values = {
 
 added: list[str] = []
 memory: list[str] = []
+
+
+def replaceMemory(start_i: int, values: list[str]):
+	for i in range(len(values)):
+		memory[start_i + i] = values[i]
+
 
 _splitter = "---"
 
