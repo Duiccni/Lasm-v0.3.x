@@ -19,13 +19,13 @@ import instruction as inst
 # for _sub in var.test_cases:
 # 	test_case += _sub
 
-test_case = var.test_cases[1]
+test_case = var.test_cases[3]
 
 TClen = len(test_case)
 _disable = False
 index = 0
 
-var.settings.mode(24, False, False, True, True, True)
+var.settings.mode(26, False, False, True, True, True)
 
 
 def foo(bar: int) -> int:

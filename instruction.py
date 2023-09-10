@@ -237,14 +237,14 @@ def _Cadd_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 				+ func.memoryProc(val2, var.WORD)
 			)
 		elif type == (_REG, _REG):
-			if tmp == val2[0]:  # type: ignore
+			if val1[0] == val2[0]:  # type: ignore
 				func.raiseError(
 					"Warning",
 					"You are trying to add a register to itself, you can shift-left instead.",
 					False,
 					_index,
 				)
-			retu.append("01" if size == var.BYTE else "00")
+			retu.append("00" if size == var.BYTE else "01")
 			retu.append(hex(0xC0 + val1[0] + (val2[0] << 3))[2:])  # type: ignore
 		elif type == (_PTR, _CONST):
 			tmp2 = func.findSize(val2)
@@ -252,7 +252,7 @@ def _Cadd_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 				size = tmp2
 			elif size < tmp2:
 				func.overflowError(size, tmp2, _index)
-			retu.append("b0" if size == var.BYTE else "b1")
+			retu.append("80" if size == var.BYTE else "81")
 			retu.append("06")
 			retu += func.memoryProc(val1, var.WORD)
 			retu += func.memoryProc(val2, size)
@@ -261,7 +261,7 @@ def _Cadd_mC(arg1: str, arg2: str, size: int | None = None) -> list[str]:
 				return
 			return (
 				_Cglobal_sC(size, 0x00)
-				+ [func.zeroExtend(hex((val1[1] << 3) + 6))]
+				+ [func.zeroExtend(hex((val2[0] << 3) + 6))]
 				+ func.memoryProc(val1, var.WORD)
 			)
 	return [var.STR_BIT_32] + retu if size == var.DWORD else retu

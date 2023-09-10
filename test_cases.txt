@@ -75,3 +75,57 @@ int 0x10
 call $
 call .near &here
 call .long &here
+---
+'''
+# add <a-reg>, <const>
+# add <reg>, <const>  # FUCK YEAH BABY I DID IT (Probably i didint)
+# add <reg>, <const8>
+
+# add <reg>, <reg>  # Complated
+
+# add <reg>, <ptr>  # Done (%80 i guess)
+# add <ptr>, <reg>  # Done (Probably)
+# add <ptr>, <const>  # Done
+'''
+// add <a-reg>, <const>
+add al, 0x43
+add ax, 0x4321
+add eax, 0x4321_0123
+add ah, 0x43
+// add <reg>, <const>
+add ch, 0x43
+add dl, 0x43
+add bx, 0x4321
+add ecx, 0x4321_0123
+// add <reg>, <const8>
+add bx, 0x43
+add ecx, 0x43
+// add <reg>, <reg>
+add al, cl
+add dh, ah
+add bx, cx
+add ecx, eax
+// add <reg>, <ptr>
+add al, *0x4321
+add dh, *0x4321
+add bx, *0x4321
+add ecx, *0x4321
+// add <ptr>, <reg>
+add *0x4321, al
+add *0x4321, dh
+add *0x4321, bx
+add *0x4321, ecx
+// add <ptr>, <const>
+add *0x4321, 0xab
+add .byte *0x4321, 0xabcd
+add *0x4321, 0xab
+add .dword *0x4321, 0xabcd
+---
+// al := num1
+// num2 := num1 + num2
+:num1
+def .byte 0x50
+:num2
+def .byte 0x0f
+mov al, &num1
+add *&num2, al

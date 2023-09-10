@@ -92,7 +92,7 @@ one_inst = {
 	"int0": ["ce"],
 	"int1": ["f1"],
 	"syscall": ["0f", "05"],
-} 
+}
 
 spec_inst = {
 	"not": (0xD0, 0xF6, "16"),
@@ -130,41 +130,7 @@ def _split_list(list_: list[str], sep: str = _splitter) -> list[list[str]]:
 
 
 test_cases_file = open("test_cases.txt")
-test_cases = (
-	_split_list(test_cases_file.readlines())
-	+ [
-		# not <reg>
-		["not " + i for i in str_regs]
-		+ ["not e" + i for i in str_regs]
-		# not *<ptr>, not .<size> *<ptr>
-		+ ["not *0x4321", "not .byte *0x4321"]
-	]
-	+ [
-		# mov <reg>, <const>
-		[f"mov {i}, 0x45" for i in regs8]
-		+ [f"mov {i}, 0x4321" for i in regs16_32]
-		+ [f"mov e{i}, 0x4321_abcd" for i in regs16_32]
-		# mov <reg>, <reg>
-		+ [f"mov {i}, {k}" for i in regs8 for k in regs8]
-		+ [f"mov {i}, {k}" for i in regs16_32 for k in regs16_32]
-		+ [f"mov e{i}, e{k}" for i in regs16_32 for k in regs16_32]
-		# mov <reg>, *<ptr>
-		+ [f"mov {i}, *0x45ab" for i in regs8]
-		+ [f"mov {i}, *0x4321" for i in regs16_32]
-		+ [f"mov e{i}, *0x4a2f" for i in regs16_32]
-		# mov *<ptr>, <reg>
-		+ [f"mov *0x45ab, {i}" for i in regs8]
-		+ [f"mov *0x4321, {i}" for i in regs16_32]
-		+ [f"mov *0x4a2f, e{i}" for i in regs16_32]
-		# mov *<ptr>, <const> -> *Auto Calculated Size.*
-		# mov .<size> *<ptr>, <const>
-		+ [
-			"mov byte *0x1234, 0x10",
-			"mov *0x1234, 0x1000",  # Size = WORD (16 bit)
-			"mov dword *0x1234 0x10000",  # Size = DWORD (32 bit)
-		]
-	]
-)
+test_cases = _split_list(test_cases_file.readlines())
 test_cases_file.close()
 
 if __name__ == "__main__":
